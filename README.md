@@ -5,8 +5,9 @@ Universitas Muhammadiyah Sukabumi, Fakultas Sains dan Teknologi, Teknik Informat
 
 | | |
 |---|---|
-| Nama / NIM | (isi nama dan NIM) |
-| Kelas | (isi kelas) |
+| Nama | Siti Salwa |
+| NIM | 2430511029 |
+| Kelas | 5A |
 
 ## Deskripsi
 Aplikasi buku harian (Diary) berbasis React Native yang menyimpan data ke database MySQL melalui REST API.
