@@ -1,0 +1,445 @@
+{
+  "info": {
+    "name": "Diary App API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "00 Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"database connected\", () => pm.expect(pm.response.json().database).to.eql(\"connected\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 READ semua diary",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/diaries",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "diaries"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"array\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 CREATE diary",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/diaries",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "diaries"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Belajar REST API\",\n  \"diary_date\": \"2026-11-24\",\n  \"body\": \"Hari ini saya belajar menghubungkan Express dan MySQL.\",\n  \"mood\": \"😄\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"201 Created\", () => pm.response.to.have.status(201));",
+              "const d = pm.response.json();",
+              "pm.test(\"punya id\", () => pm.expect(d.id).to.be.a(\"number\"));",
+              "pm.collectionVariables.set(\"diary_id\", d.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 READ satu diary",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/diaries/{{diary_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "diaries",
+            "{{diary_id}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"id sesuai\", () => pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get(\"diary_id\"))));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 UPDATE diary",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/diaries/{{diary_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "diaries",
+            "{{diary_id}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Belajar CRUD dan REST API\",\n  \"body\": \"Hari ini saya memahami alur CRUD pada aplikasi mobile.\",\n  \"mood\": \"😌\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"judul berubah\", () => pm.expect(pm.response.json().title).to.eql(\"Belajar CRUD dan REST API\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 UPDATE favorite (liked)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/diaries/{{diary_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "diaries",
+            "{{diary_id}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"liked\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"liked = 1\", () => pm.expect(Number(pm.response.json().liked)).to.eql(1));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 SEARCH diary",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/diaries?search=CRUD",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "diaries"
+          ],
+          "query": [
+            {
+              "key": "search",
+              "value": "CRUD"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"ada hasil\", () => pm.expect(pm.response.json().length).to.be.above(0));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 CREATE title pendek (400)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/diaries",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "diaries"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"ab\",\n  \"diary_date\": \"2026-11-24\",\n  \"body\": \"isi\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"400 Bad Request\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 CREATE tanpa body (400)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/diaries",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "diaries"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Tanpa body\",\n  \"diary_date\": \"2026-11-24\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"400 Bad Request\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 READ id tidak ada (404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/diaries/999999",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "diaries",
+            "999999"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"404 Not Found\", () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 DELETE diary",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/diaries/{{diary_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "diaries",
+            "{{diary_id}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"pesan berhasil\", () => pm.expect(pm.response.json().message).to.include(\"berhasil\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 DELETE ulang (404)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/diaries/{{diary_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "diaries",
+            "{{diary_id}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"404 Not Found\", () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "diary_id",
+      "value": ""
+    }
+  ]
+}
